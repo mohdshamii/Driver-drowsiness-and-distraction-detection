@@ -155,7 +155,7 @@ Revive was conceived, engineered, and maintained by **Mohd Shami**:
 
 - **Developer**: Mohd Shami
 - **Personal Portfolio**: [https://mohdshamii.github.io/](https://mohdshamii.github.io/)
-- **GitHub Repository**: [https://github.com/mohdshamii/Revive](https://github.com/mohdshamii/Driver-drowsiness-and-distraction-detection)
+- **GitHub Repository**: [https://github.com/mohdshamii/Driver-drowsiness-and-distraction-detection](https://github.com/mohdshamii/Driver-drowsiness-and-distraction-detection)
 - **LinkedIn**: [https://www.linkedin.com/in/mohdshamii](https://www.linkedin.com/in/mohdshamii)
 - **Primary Email**: [codexshami@gmail.com](mailto:codexshami@gmail.com)
 
