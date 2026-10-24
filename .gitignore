@@ -1,0 +1,86 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.python-version
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Flask
+instance/
+.webassets-cache/
+flask_session/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+
+# SQLite databases and temporary database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+
+# Generated data and model artifacts
+data/raw/
+data/processed/
+models/saved/
+*.pkl
+*.joblib
+*.onnx
+*.h5
+
+# Generated screenshots and video recordings
+recordings/
+captures/
+screenshots/
+*.mp4
+*.avi
+*.mov
+*.webm
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.bak
+# Database folder
+database/

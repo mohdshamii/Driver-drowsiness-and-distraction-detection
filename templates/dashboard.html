@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Guardian - Operator Attention Monitoring System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="enterprise-theme">
+  <!-- Top Navbar -->
+  <header class="app-navbar">
+    <div class="nav-left">
+      <div class="nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <circle cx="12" cy="11" r="3"/>
+        </svg>
+      </div>
+      <div class="nav-brand">
+        <h1 class="brand-title">Driver Guardian</h1>
+        <span class="brand-subtitle">Operator Attention & Drowsiness Monitoring</span>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <div id="driverStatusPill" class="status-badge badge-normal">
+        <span class="status-indicator"></span>
+        <span id="driverStatusText">SYSTEM ACTIVE • ATTENTIVE</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <div class="session-timer-widget">
+        <span class="timer-label">SESSION:</span>
+        <span id="sessionTimer" class="mono-num">00:00:00</span>
+      </div>
+
+      <button id="btnAudioToggle" class="btn-nav" title="Toggle Audio Alarm">
+        <svg id="iconAudioOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <svg id="iconAudioOff" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <line x1="23" y1="9" x2="17" y2="15"/>
+          <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <span id="audioLabel">AUDIO ON</span>
+      </button>
+
+      <a href="/api/export/alerts_csv" class="btn-nav" title="Export Log to CSV">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>EXPORT</span>
+      </a>
+
+      <button id="btnSettingsModal" class="btn-nav btn-icon" title="Settings & Calibration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Notice Banner -->
+  <div class="system-notice-banner">
+    <div class="notice-content">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="notice-svg">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      <span class="notice-text">
+        <strong>System Notice:</strong> Face and eye detection are processed directly from live video frames. Eye closure duration, yawning, and distraction estimates are heuristic approximations and may vary under adverse lighting, head orientation, or glasses.
+      </span>
+    </div>
+  </div>
+
+  <!-- Camera Connection Error Banner (Dynamic) -->
+  <div id="cameraAlertBar" class="camera-connection-bar hidden">
+    <div class="cam-alert-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cam-alert-svg">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <span id="cameraAlertText">Camera device offline or in use. Ensure camera privacy permissions are enabled.</span>
+    </div>
+    <button id="btnReconnectCam" class="btn-primary-action">RECONNECT CAMERA</button>
+  </div>
+
+  <!-- Main Dashboard Container -->
+  <main class="dashboard-layout">
+    <!-- Top Row: Video Feed + Primary Risk Metrics -->
+    <div class="dashboard-row top-row">
+      <!-- Left Column: Video Viewport Card -->
+      <section class="ui-card video-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <span class="live-pill">LIVE FEED</span>
+            <h2>Camera Viewport</h2>
+          </div>
+          <div class="telemetry-badges">
+            <span id="fpsBadge" class="badge-tag">FPS: 30</span>
+            <span id="faceDetectBadge" class="badge-tag tag-success">FACE: DETECTED</span>
+          </div>
+        </div>
+
+        <div class="camera-viewport-container">
+          <img id="videoFeed" src="/video_feed" alt="Camera Stream" class="camera-feed-img">
+          <div id="videoAlarmBanner" class="feed-alert-banner hidden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon-svg">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span id="alarmBannerText">ATTENTION REQUIRED</span>
+          </div>
+        </div>
+
+        <!-- Video Control Bar -->
+        <div class="viewport-toolbar">
+          <div class="toolbar-item">
+            <label for="selectSource" class="form-label">Camera Index:</label>
+            <select id="selectSource" class="select-field">
+              <option value="0" selected>Device 0 (Default)</option>
+              <option value="1">Device 1 (External)</option>
+              <option value="2">Device 2 (Secondary)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-item">
+            <button id="btnStartStop" class="btn-secondary-action btn-danger-state">
+              <span class="btn-state-dot"></span>
+              <span id="btnStartStopText">PAUSE MONITOR</span>
+            </button>
+          </div>
+
+          <div class="toolbar-switches">
+            <label class="switch-container" title="Toggle Face Bounding Box">
+              <input type="checkbox" id="toggleFaceBox" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-label">Face Box</span>
+            </label>
+
+            <label class="switch-container" title="Toggle Eye ROI Boxes">
+              <input type="checkbox" id="toggleEyesBox" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-label">Eye ROI</span>
+            </label>
+
+            <label class="switch-container" title="Toggle Centroid Drift Vector">
+              <input type="checkbox" id="toggleDrift" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-label">Drift Vector</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Risk Score & Primary Metrics -->
+      <section class="ui-card metrics-summary-card">
+        <div class="card-head">
+          <h2>Driver State Telemetry</h2>
+          <span class="badge-tag">HEURISTIC PIPELINE</span>
+        </div>
+
+        <div class="risk-meter-layout">
+          <!-- Circular Risk Score Meter -->
+          <div class="gauge-block">
+            <div class="gauge-visual">
+              <svg class="gauge-svg-element" viewBox="0 0 200 200">
+                <circle class="gauge-track" cx="100" cy="100" r="80" />
+                <circle id="gaugeProgress" class="gauge-indicator" cx="100" cy="100" r="80" />
+              </svg>
+              <div class="gauge-center-content">
+                <span id="riskScoreVal" class="risk-digit mono-num">0</span>
+                <span class="risk-unit">%</span>
+                <span class="risk-sub">RISK INDEX</span>
+              </div>
+            </div>
+            <div id="riskLevelLabel" class="risk-status-pill badge-normal">ATTENTIVE</div>
+          </div>
+
+          <!-- Feature Progress Meters -->
+          <div class="feature-progress-column">
+            <!-- Eye Visibility -->
+            <div class="progress-widget">
+              <div class="widget-header">
+                <span class="widget-title">Eye Visibility (EAR Proxy)</span>
+                <span id="valVisibility" class="widget-val mono-num">100%</span>
+              </div>
+              <div class="track-bg">
+                <div id="barVisibility" class="track-fill fill-normal" style="width: 100%;"></div>
+                <div class="threshold-marker" style="left: 40%;" title="Threshold (40%)"></div>
+              </div>
+              <div class="widget-footnote">Threshold: 40% • Consecutive missing frames indicates eye closure</div>
+            </div>
+
+            <!-- Mouth Opening -->
+            <div class="progress-widget">
+              <div class="widget-header">
+                <span class="widget-title">Mouth Opening Metric (MAR Proxy)</span>
+                <span id="valMouth" class="widget-val mono-num">0.00</span>
+              </div>
+              <div class="track-bg">
+                <div id="barMouth" class="track-fill fill-primary" style="width: 10%;"></div>
+                <div class="threshold-marker" style="left: 30%;" title="Threshold (0.30)"></div>
+              </div>
+              <div class="widget-footnote">Threshold: 0.30 • Oral cavity expansion indicates yawning</div>
+            </div>
+
+            <!-- Centroid Drift Box -->
+            <div class="drift-readout-row">
+              <div class="readout-box">
+                <span class="readout-label">DRIFT X</span>
+                <span id="valDriftX" class="readout-num mono-num">+0.00</span>
+                <span class="readout-sub">Limit: ±0.28</span>
+              </div>
+              <div class="readout-box">
+                <span class="readout-label">DRIFT Y</span>
+                <span id="valDriftY" class="readout-num mono-num">+0.00</span>
+                <span class="readout-sub">Down: +0.24</span>
+              </div>
+              <div class="readout-box">
+                <span class="readout-label">EYES FOUND</span>
+                <span id="valEyesCount" class="readout-num mono-num">2</span>
+                <span id="valEyeAbsence" class="readout-sub">0 frames</span>
+              </div>
+            </div>
+
+            <div class="distraction-indicator-banner">
+              <span class="distract-title">DISTRACTION STATE:</span>
+              <span id="distractionStatusText" class="distract-status">ATTENTIVE (HEURISTIC)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 Metric Cards: EAR, MAR, PERCLOS, FPS, Blinks, Yawns, Alerts -->
+        <div class="metrics-grid-seven">
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">EAR</span>
+              <span id="cardValEar" class="mini-val mono-num">1.00</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">MAR</span>
+              <span id="cardValMar" class="mini-val mono-num">0.00</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="5" x2="5" y2="19"/>
+                <circle cx="6.5" cy="6.5" r="2.5"/>
+                <circle cx="17.5" cy="17.5" r="2.5"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">PERCLOS</span>
+              <span id="cardValPerclos" class="mini-val mono-num">0.0%</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">FPS</span>
+              <span id="cardValFps" class="mini-val mono-num">30</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">Blinks</span>
+              <span id="statBlinks" class="mini-val mono-num">0</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">Yawns</span>
+              <span id="statYawns" class="mini-val mono-num">0</span>
+            </div>
+          </div>
+
+          <div class="metric-mini-card">
+            <div class="mini-icon icon-alert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <div class="mini-data">
+              <span class="mini-label">Alerts</span>
+              <span id="statTotalAlerts" class="mini-val mono-num text-danger">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Row: Signal Waveform Chart + Incident Log -->
+    <div class="dashboard-row bottom-row">
+      <!-- Signal Waveform Card -->
+      <section class="ui-card chart-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-svg">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <h2>Telemetry Signal Waveforms</h2>
+          </div>
+          <div class="chart-legend-row">
+            <span class="legend-color-box box-blue"></span>
+            <span class="legend-text-label">Eye Visibility (%)</span>
+            <span class="legend-color-box box-amber"></span>
+            <span class="legend-text-label">Mouth Opening (%)</span>
+          </div>
+        </div>
+        <div class="chart-viewport">
+          <canvas id="telemetryChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Safety Incidents Table Card -->
+      <section class="ui-card table-card">
+        <div class="card-head">
+          <div class="card-title-group">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-svg">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <h2>Safety Incident History</h2>
+          </div>
+          <span id="alertCountBadge" class="badge-tag">0 INCIDENTS</span>
+        </div>
+        <div class="table-container">
+          <table class="enterprise-table">
+            <thead>
+              <tr>
+                <th>TIMESTAMP</th>
+                <th>SEVERITY</th>
+                <th>EVENT TYPE</th>
+                <th>DESCRIPTION</th>
+              </tr>
+            </thead>
+            <tbody id="alertsTableBody">
+              <tr class="empty-state-row">
+                <td colspan="4">No safety incidents recorded during this monitoring session.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Settings Modal Dialog -->
+  <div id="settingsModal" class="modal-scrim hidden">
+    <div class="modal-window">
+      <div class="modal-top">
+        <h3>Detection Thresholds & Sensitivity</h3>
+        <button id="btnCloseModal" class="btn-close-modal">&times;</button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Eye Absence Slider -->
+        <div class="field-group">
+          <div class="field-meta">
+            <label for="sliderEyeAbsence" class="field-title">Eye Absence Threshold (Closed Duration)</label>
+            <span id="sliderEyeAbsenceVal" class="mono-num field-value">12 frames</span>
+          </div>
+          <input type="range" id="sliderEyeAbsence" min="6" max="25" step="1" value="12" class="range-slider">
+          <span class="field-help">Frames without detected eyes before flagging prolonged closure (~0.4s to 0.8s).</span>
+        </div>
+
+        <!-- Mouth Opening Slider -->
+        <div class="field-group">
+          <div class="field-meta">
+            <label for="sliderYawn" class="field-title">Mouth Opening Yawn Threshold</label>
+            <span id="sliderYawnVal" class="mono-num field-value">0.30</span>
+          </div>
+          <input type="range" id="sliderYawn" min="0.18" max="0.50" step="0.02" value="0.30" class="range-slider">
+          <span class="field-help">Ratio of detected oral cavity height to mouth width.</span>
+        </div>
+
+        <!-- Head Drift Slider -->
+        <div class="field-group">
+          <div class="field-meta">
+            <label for="sliderDriftX" class="field-title">Head Centroid Drift Limit (Horizontal)</label>
+            <span id="sliderDriftXVal" class="mono-num field-value">0.28</span>
+          </div>
+          <input type="range" id="sliderDriftX" min="0.15" max="0.45" step="0.01" value="0.28" class="range-slider">
+          <span class="field-help">Permissible normalized head offset before triggering distraction warning.</span>
+        </div>
+
+        <!-- Buzzer Volume -->
+        <div class="field-group">
+          <div class="field-meta">
+            <label for="sliderVol" class="field-title">Acoustic Alarm Volume</label>
+            <span id="sliderVolVal" class="mono-num field-value">80%</span>
+          </div>
+          <input type="range" id="sliderVol" min="0" max="100" step="5" value="80" class="range-slider">
+          <span class="field-help">Browser Web Audio API alert sound volume.</span>
+        </div>
+      </div>
+
+      <div class="modal-bottom">
+        <button id="btnTestChime" class="btn-secondary-action">Test Audio Tone</button>
+        <button id="btnSaveSettings" class="btn-primary-action">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
