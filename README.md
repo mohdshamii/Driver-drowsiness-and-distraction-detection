@@ -140,6 +140,17 @@ python app.py
 Open **`http://127.0.0.1:5000`** in your browser.
 
 ---
+## Developer Attribution & Repository Information
+
+Revive was conceived, engineered, and maintained by **Mohd Shami**:
+
+- **Developer**: Mohd Shami
+- **Personal Portfolio**: [https://mohdshamii.github.io/](https://mohdshamii.github.io/)
+- **GitHub Repository**: [https://github.com/mohdshamii/Revive](https://github.com/mohdshamii/Driver-drowsiness-and-distraction-detection)
+- **LinkedIn**: [https://www.linkedin.com/in/mohdshamii](https://www.linkedin.com/in/mohdshamii)
+- **Primary Email**: [codexshami@gmail.com](mailto:codexshami@gmail.com)
+
+---
 
 ## 5. Troubleshooting Camera Permissions
 If you see the camera connection warning:
