@@ -3,8 +3,16 @@ Unit and Integration Tests for OpenCV Haar Cascade Driver Drowsiness and Distrac
 Tests face cascade, eye visibility tracker, mouth image processing, centroid drift heuristic,
 risk engine, and camera error handling.
 """
-import unittest
 import os
+import sys
+from pathlib import Path
+
+# Add repository root to sys.path for pytest and CI environments
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+import unittest
 import cv2
 import numpy as np
 import config
