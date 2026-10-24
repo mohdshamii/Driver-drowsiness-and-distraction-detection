@@ -140,6 +140,15 @@ python app.py
 Open **`http://127.0.0.1:5000`** in your browser.
 
 ---
+
+
+## 5. Troubleshooting Camera Permissions
+If you see the camera connection warning:
+1. Ensure your webcam is plugged in and any physical privacy shutter is open.
+2. In Windows: Go to **Settings $\rightarrow$ Privacy & Security $\rightarrow$ Camera**, ensure **Camera access** and **Let apps access your camera** are toggled **ON**.
+3. Close other applications that may have exclusive locks on the webcam (e.g. Zoom, Microsoft Teams, Skype).
+4. Click the **RECONNECT WEBCAM** button on the dashboard or select Camera Index 1 if using an external USB webcam.
+
 ## Developer Attribution & Repository Information
 
 Revive was conceived, engineered, and maintained by **Mohd Shami**:
@@ -151,10 +160,3 @@ Revive was conceived, engineered, and maintained by **Mohd Shami**:
 - **Primary Email**: [codexshami@gmail.com](mailto:codexshami@gmail.com)
 
 ---
-
-## 5. Troubleshooting Camera Permissions
-If you see the camera connection warning:
-1. Ensure your webcam is plugged in and any physical privacy shutter is open.
-2. In Windows: Go to **Settings $\rightarrow$ Privacy & Security $\rightarrow$ Camera**, ensure **Camera access** and **Let apps access your camera** are toggled **ON**.
-3. Close other applications that may have exclusive locks on the webcam (e.g. Zoom, Microsoft Teams, Skype).
-4. Click the **RECONNECT WEBCAM** button on the dashboard or select Camera Index 1 if using an external USB webcam.
