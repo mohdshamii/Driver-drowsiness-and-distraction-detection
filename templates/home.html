@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Driver Guardian monitors driver attention, drowsiness, and distraction in real time.">
+  <title>Driver Guardian | Driver Safety Monitoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .home-page {
+      min-height: 100vh;
+      background: radial-gradient(circle at 85% 12%, rgba(37, 99, 235, 0.18), transparent 34rem), radial-gradient(circle at 8% 85%, rgba(22, 163, 74, 0.08), transparent 28rem), var(--bg-page);
+    }
+
+    .home-nav, .home-hero, .home-features, .home-footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+
+    .home-nav {
+      padding-top: 24px;
+      padding-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .home-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .home-brand .nav-logo { flex-shrink: 0; }
+
+    .home-brand-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .home-brand-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      margin-top: 2px;
+    }
+
+    .home-hero {
+      padding-top: 74px;
+      padding-bottom: 96px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      align-items: center;
+      gap: 72px;
+    }
+
+    .home-eyebrow {
+      color: #60a5fa;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .home-title {
+      max-width: 700px;
+      color: var(--text-primary);
+      font-size: clamp(2.5rem, 6vw, 4.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      margin-bottom: 22px;
+    }
+
+    .home-title span { color: #60a5fa; }
+
+    .home-description {
+      max-width: 600px;
+      color: var(--text-secondary);
+      font-size: 1.08rem;
+      line-height: 1.75;
+      margin-bottom: 34px;
+    }
+
+    .home-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .home-primary-action, .home-secondary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 7px;
+      padding: 12px 18px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .home-primary-action {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    .home-primary-action:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .home-secondary-action {
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .home-secondary-action:hover {
+      border-color: #4b5563;
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .home-preview {
+      position: relative;
+      background: rgba(31, 41, 55, 0.82);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+      padding: 18px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .preview-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4ade80;
+    }
+
+    .preview-live::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .preview-screen {
+      aspect-ratio: 16 / 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px), #101925;
+      background-size: 28px 28px;
+    }
+
+    .preview-reticle {
+      width: 112px;
+      height: 112px;
+      border: 1px solid rgba(96, 165, 250, 0.8);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 34px rgba(37, 99, 235, 0.3);
+    }
+
+    .preview-reticle::before, .preview-reticle::after {
+      content: "";
+      position: absolute;
+      background: rgba(96, 165, 250, 0.75);
+    }
+
+    .preview-reticle::before {
+      width: 1px;
+      height: 138px;
+      left: 55px;
+      top: -14px;
+    }
+
+    .preview-reticle::after {
+      width: 138px;
+      height: 1px;
+      left: -14px;
+      top: 55px;
+    }
+
+    .preview-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preview-metric {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .preview-metric-label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.66rem;
+      margin-bottom: 4px;
+    }
+
+    .preview-metric-value {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .home-features {
+      padding-bottom: 74px;
+    }
+
+    .home-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .home-feature {
+      background: rgba(31, 41, 55, 0.68);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 22px;
+    }
+
+    .home-feature-icon {
+      color: #60a5fa;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .home-feature h2 {
+      color: var(--text-primary);
+      font-size: 1rem;
+      margin-bottom: 9px;
+    }
+
+    .home-feature p {
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+
+    .home-footer {
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      padding-top: 20px;
+      padding-bottom: 28px;
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .home-hero {
+        grid-template-columns: 1fr;
+        gap: 42px;
+        padding-top: 48px;
+      }
+
+      .home-feature-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .home-nav, .home-hero, .home-features, .home-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .home-nav .btn-nav span { display: none; }
+    }
+  </style>
+</head>
+<body class="enterprise-theme">
+  <div class="home-page">
+    <nav class="home-nav" aria-label="Primary navigation">
+      <a class="home-brand" href="/">
+        <span class="nav-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <circle cx="12" cy="11" r="3"/>
+          </svg>
+        </span>
+        <span>
+          <span class="home-brand-name">Driver Guardian</span>
+          <span class="home-brand-label">Driver safety intelligence</span>
+        </span>
+      </a>
+      <a class="btn-nav" href="/">
+        <span>OPEN DASHBOARD</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14"/>
+          <path d="m13 6 6 6-6 6"/>
+        </svg>
+      </a>
+    </nav>
+
+    <main>
+      <section class="home-hero">
+        <div>
+          <p class="home-eyebrow">Real-time driver monitoring</p>
+          <h1 class="home-title">Keep attention on the road with <span>Driver Guardian.</span></h1>
+          <p class="home-description">
+            Monitor drowsiness and distraction through your webcam with a live safety cockpit,
+            clear risk signals, and actionable alerts for every journey.
+          </p>
+          <div class="home-actions">
+            <a class="home-primary-action" href="/">Launch monitoring dashboard <span aria-hidden="true">-&gt;</span></a>
+            <a class="home-secondary-action" href="#capabilities">Explore capabilities</a>
+          </div>
+        </div>
+
+        <div class="home-preview" aria-label="Dashboard preview">
+          <div class="preview-header">
+            <span>Attention cockpit</span>
+            <span class="preview-live">System ready</span>
+          </div>
+          <div class="preview-screen">
+            <div class="preview-reticle" aria-hidden="true"></div>
+          </div>
+          <div class="preview-metrics">
+            <div class="preview-metric">
+              <span class="preview-metric-label">Risk score</span>
+              <span class="preview-metric-value">12%</span>
+            </div>
+            <div class="preview-metric">
+              <span class="preview-metric-label">Eye visibility</span>
+              <span class="preview-metric-value">98%</span>
+            </div>
+            <div class="preview-metric">
+              <span class="preview-metric-label">Camera</span>
+              <span class="preview-metric-value">READY</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="capabilities" class="home-features" aria-label="Capabilities">
+        <div class="home-feature-grid">
+          <article class="home-feature">
+            <div class="home-feature-icon">01 / DETECT</div>
+            <h2>Live attention signals</h2>
+            <p>Track face presence, eye visibility, mouth opening, and head movement from live camera frames.</p>
+          </article>
+          <article class="home-feature">
+            <div class="home-feature-icon">02 / ASSESS</div>
+            <h2>Combined risk scoring</h2>
+            <p>Fuse drowsiness and distraction indicators into a single risk score with clear status levels.</p>
+          </article>
+          <article class="home-feature">
+            <div class="home-feature-icon">03 / RESPOND</div>
+            <h2>Timely safety alerts</h2>
+            <p>Receive visual and audio warnings, then review recorded alert events from the dashboard.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="home-footer">
+      Driver Guardian uses computer vision heuristics to support driver awareness. It is not a replacement for safe driving practices.
+    </footer>
+  </div>
+</body>
+</html>
